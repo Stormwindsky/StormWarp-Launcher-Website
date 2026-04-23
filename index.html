@@ -206,12 +206,21 @@
             cursor: pointer;
             transition: all 0.2s ease;
             border: 1px solid var(--border);
+            text-align: center;
+            text-decoration: none;
+            display: block;
         }
 
         .btn-download:hover {
             background: white;
             color: var(--bg-dark);
             transform: scale(1.02);
+        }
+
+        .btn-download.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
         }
 
         .close-x {
@@ -275,12 +284,12 @@
                         </div>
                     </div>
                     
-                    <button class="btn-download" onclick="startDownload('Online')">Download Online Version</button>
+                    <a href="https://gamejolt.com/games/SWDOV/1065720" target="_blank" class="btn-download">Download Online Version</a>
                 </div>
 
                 <div class="option-card">
                     <div>
-                        <span class="license">GPL-3.0 License</span>
+                        <span class="license">Coming Soon</span>
                         <h3>Offline Version</h3>
                     </div>
                     
@@ -298,7 +307,7 @@
                         </div>
                     </div>
                     
-                    <button class="btn-download" onclick="startDownload('Offline')">Download Offline Version</button>
+                    <button class="btn-download disabled">Offline Coming Soon</button>
                 </div>
             </div>
         </div>
@@ -314,13 +323,6 @@
                 overlay.classList.remove('active');
                 setTimeout(() => overlay.style.display = 'none', 300);
             }
-        }
-
-        function startDownload(version) {
-            console.log(`Initialising StormWarp ${version} download...`);
-            // Add your download links here
-            alert(`StormWarp Launcher (${version}) download started.\nThis software is licensed under GPL-3.0.`);
-            toggleModal(false);
         }
 
         // Close on outside click

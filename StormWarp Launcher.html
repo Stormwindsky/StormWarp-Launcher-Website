@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StormWarp Launcher Download</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --accent: #0ea5e9;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --success: #10b981;
+            --danger: #f43f5e;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(14, 165, 233, 0.15) 0%, transparent 40%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+            overflow: hidden;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            background: linear-gradient(to right, #fff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Main Download Button */
+        .download-trigger {
+            padding: 18px 40px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .download-trigger:hover {
+            background: var(--primary-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -5px rgba(99, 102, 241, 0.6);
+        }
+
+        /* Modal Structure */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(12px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal {
+            background: var(--card-bg);
+            width: 95%;
+            max-width: 900px;
+            border-radius: 28px;
+            padding: 48px;
+            position: relative;
+            border: 1px solid var(--border);
+            transform: translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .modal-header h2 {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+            color: white;
+        }
+
+        .modal-header p {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+        }
+
+        /* Options Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .option-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .option-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--accent);
+            transform: translateY(-5px);
+        }
+
+        .license {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--accent);
+            background: rgba(14, 165, 233, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .option-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .points-container {
+            flex-grow: 1;
+            margin-bottom: 30px;
+        }
+
+        .point-group { margin-bottom: 20px; }
+
+        .point-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .point {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            display: flex;
+            gap: 10px;
+            line-height: 1.4;
+        }
+
+        .point.pro::before { content: "→"; color: var(--success); font-weight: bold; }
+        .point.con::before { content: "→"; color: var(--danger); font-weight: bold; }
+
+        .btn-download {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid var(--border);
+        }
+
+        .btn-download:hover {
+            background: white;
+            color: var(--bg-dark);
+            transform: scale(1.02);
+        }
+
+        .close-x {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        @media (max-width: 850px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .modal { padding: 30px; height: 85vh; overflow-y: auto; }
+            .hero h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+        <h1>StormWarp Launcher</h1>
+        <p style="color: var(--text-dim)">The next generation Scratch project loader.</p>
+    </div>
+
+    <button class="download-trigger" onclick="toggleModal(true)">
+        <span>Get StormWarp</span>
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+    </button>
+
+    <div class="overlay" id="modalOverlay">
+        <div class="modal">
+            <button class="close-x" onclick="toggleModal(false)">&times;</button>
+            
+            <div class="modal-header">
+                <h2>Select Your Version</h2>
+                <p>Choose between lightweight cloud access or full local power.</p>
+            </div>
+
+            <div class="options-grid">
+                <div class="option-card">
+                    <div>
+                        <span class="license">GPL-3.0 License</span>
+                        <h3>Online Launcher</h3>
+                    </div>
+                    
+                    <div class="points-container">
+                        <div class="point-group">
+                            <span class="point-label" style="color: var(--success)">Pros</span>
+                            <div class="point pro">Automatic updates</div>
+                            <div class="point pro">Load projects directly via URL (.sb3 / .sw)</div>
+                            <div class="point pro">Saves disk space</div>
+                        </div>
+                        <div class="point-group">
+                            <span class="point-label" style="color: var(--danger)">Cons</span>
+                            <div class="point con">Requires internet connection</div>
+                            <div class="point con">Incompatible with some offline extensions</div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-download" onclick="startDownload('Online')">Download Online Version</button>
+                </div>
+
+                <div class="option-card">
+                    <div>
+                        <span class="license">GPL-3.0 License</span>
+                        <h3>Offline Version</h3>
+                    </div>
+                    
+                    <div class="points-container">
+                        <div class="point-group">
+                            <span class="point-label" style="color: var(--success)">Pros</span>
+                            <div class="point pro">Works 100% without internet</div>
+                            <div class="point pro">Full extension support (Offline optimized)</div>
+                        </div>
+                        <div class="point-group">
+                            <span class="point-label" style="color: var(--danger)">Cons</span>
+                            <div class="point con">Updates must be downloaded manually</div>
+                            <div class="point con">Takes up more disk space</div>
+                            <div class="point con">Online-specific extensions may not function</div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-download" onclick="startDownload('Offline')">Download Offline Version</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleModal(isVisible) {
+            const overlay = document.getElementById('modalOverlay');
+            if (isVisible) {
+                overlay.style.display = 'flex';
+                setTimeout(() => overlay.classList.add('active'), 10);
+            } else {
+                overlay.classList.remove('active');
+                setTimeout(() => overlay.style.display = 'none', 300);
+            }
+        }
+
+        function startDownload(version) {
+            console.log(`Initialising StormWarp ${version} download...`);
+            // Add your download links here
+            alert(`StormWarp Launcher (${version}) download started.\nThis software is licensed under GPL-3.0.`);
+            toggleModal(false);
+        }
+
+        // Close on outside click
+        window.onclick = (e) => {
+            if (e.target.id === 'modalOverlay') toggleModal(false);
+        }
+    </script>
+</body>
+</html>
